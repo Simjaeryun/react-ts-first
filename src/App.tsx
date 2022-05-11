@@ -1,26 +1,25 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import { useState } from "react";
+import styled from "styled-components";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+	const [value, setValue] = useState("");
+	const onChange = (evt: React.FormEvent<HTMLInputElement>) => {
+		console.log(evt.currentTarget.value);
+	};
+	return (
+		<div className="App">
+			<form action="">
+				<input
+					type="text"
+					placeholder="username"
+					value={value}
+					onChange={onChange}
+				/>
+				<button>Log In</button>
+			</form>
+		</div>
+	);
 }
 
 export default App;
