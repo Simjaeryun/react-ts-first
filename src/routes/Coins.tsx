@@ -1,5 +1,7 @@
+import { useQuery } from "react-query";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
+import { fetchCoins } from "../api";
 
 const Container = styled.div`
 	padding: 0px 10px;
@@ -10,7 +12,6 @@ const Header = styled.header`
 	justify-content: center;
 	align-items: center;
 `;
-
 const CoinsList = styled.ul``;
 
 const Coin = styled.li`
@@ -21,8 +22,9 @@ const Coin = styled.li`
 	a {
 		transition: color 0.2s ease-in;
 		display: block;
-
 		padding: 20px;
+		display: flex;
+		align-items: center;
 	}
 	&:hover {
 		a {
@@ -35,50 +37,66 @@ const Title = styled.h1`
 	color: ${(props) => props.theme.accentColor};
 `;
 
-const coins = [
-	{
-		id: "btc-bitcoin",
-		name: "Bitcoin",
-		symbol: "BTC",
-		rank: 1,
-		is_new: false,
-		is_active: true,
-		type: "coin",
-	},
-	{
-		id: "eth-ethereum",
-		name: "Ethereum",
-		symbol: "ETH",
-		rank: 2,
-		is_new: false,
-		is_active: true,
-		type: "coin",
-	},
-	{
-		id: "usdt-tether",
-		name: "Tether",
-		symbol: "USDT",
-		rank: 3,
-		is_new: false,
-		is_active: true,
-		type: "token",
-	},
-];
+const Loader = styled.div`
+	font-size: 50px;
+	color: ${(props) => props.theme.textColor};
+`;
+
+const Img = styled.img`
+	width: 25px;
+	height: 25px;
+	margin-right: 10px;
+`;
+
+interface ICoin {
+	id: string;
+	name: string;
+	symbol: string;
+	rank: number;
+	is_new: boolean;
+	is_active: boolean;
+	type: string;
+}
+
 export default function Coins() {
+	// const [coins, setCoins] = useState<ICoin[]>([]);
+	// const [loading, setLoading] = useState(true);
+	// useEffect(() => {
+	// 	(async () => {
+	// 		const res = await fetch("https://api.coinpaprika.com/v1/coins");
+	// 		const json = await res.json();
+	// 		setCoins(json.slice(0, 100));
+	// 		setLoading(false);
+	// 	})();
+	// }, []);
+	const { isLoading, data } = useQuery<ICoin[]>("allCoins", fetchCoins);
 	return (
 		<Container>
 			<Header>
 				<Title>Coin</Title>
 			</Header>
-			<CoinsList>
-				{coins.map((coin) => {
-					return (
-						<Coin key={coin.id}>
-							<Link to={`/${coin.id}`}>{coin.name} &rarr;</Link>
-						</Coin>
-					);
-				})}
-			</CoinsList>
+			{isLoading ? (
+				<Loader>Loading...</Loader>
+			) : (
+				<CoinsList>
+					{data?.slice(0, 100).map((coin) => {
+						return (
+							<Coin key={coin.id}>
+								<Link
+									to={`/${coin.id}`}
+									state={{ name: coin.name }}
+								>
+									<Img
+										src={`https://cryptocurrencyliveprices.com/img/${coin.id}.png`}
+										alt="coin_image"
+									/>
+									{coin.name} &rarr;
+								</Link>
+							</Coin>
+						);
+					})}
+				</CoinsList>
+			)}
 		</Container>
 	);
 }
